@@ -52,10 +52,10 @@ The project features a **mascot named Zyra**, representing a smart, approachable
 [GPU Server / Inference]
  ┌────────────────────────────────────────────┐
  │ FastAPI + RAG Pipeline                     │
- │ ├─ ChromaDB (Vector Store)                │
- │ ├─ Embeddings (MiniLM / MPNet)            │
- │ ├─ LLM (TinyLLaMA / Mistral / Phi-3)     │
- │ └─ Streaming Token Output                 │
+ │ ├─ ChromaDB (Vector Store)                 │
+ │ ├─ Embeddings (MiniLM / MPNet)             │
+ │ ├─ LLM (TinyLLaMA / Mistral / Phi-3)       │
+ │ └─ Streaming Token Output                  │
  └────────────────────────────────────────────┘
 ```
 
@@ -175,11 +175,5 @@ python client.py
 5. Generate embeddings with `sentence-transformers` and store in vector database
 
 **Note:** High-quality, clean, and well-chunked data is the most critical factor for accurate RAG responses.
-
----
-
-## License
-
-[MIT License] – free for educational and research purposes
 
 ---
