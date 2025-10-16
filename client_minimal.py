@@ -7,7 +7,7 @@ import json
 import sys
 import websockets
 
-SERVER_URL = "ws://localhost:8000/ws"  # Change to your server IP
+SERVER_URL = "ws://192.168.254.135:8000/ws"
 
 async def query(question):
     try:

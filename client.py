@@ -18,7 +18,7 @@ import websockets
 from websockets.exceptions import ConnectionClosed
 
 # Server configuration
-SERVER_URL = "ws://localhost:8000/ws"  # Change this for network access
+SERVER_URL = "ws://192.168.254.135:8000/ws"
 
 
 async def send_query(query: str, server_url: str = SERVER_URL, top_k: int = 5):
