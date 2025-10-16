@@ -7,8 +7,8 @@ Usage:
     python client.py test               # Test mode with predefined queries
     python client.py "your question"    # Single query mode
     
-Network Usage (change SERVER_URL):
-    SERVER_URL = "ws://192.168.1.100:8000/ws"  # Remote server
+Network Usage:
+    Update SERVER_IP in server/config.py when changing networks
 """
 
 import asyncio
@@ -17,8 +17,12 @@ import sys
 import websockets
 from websockets.exceptions import ConnectionClosed
 
-# Server configuration
-SERVER_URL = "ws://192.168.254.135:8000/ws"
+# Import server configuration
+try:
+    from server.config import WEBSOCKET_URL as SERVER_URL
+except ImportError:
+    # Fallback if config not available (standalone client)
+    SERVER_URL = "ws://192.168.23.187:8000/ws"
 
 
 async def send_query(query: str, server_url: str = SERVER_URL, top_k: int = 5):
