@@ -1,25 +1,70 @@
-/env
-/venv
-/tasks
+# Python
 __pycache__/
-*.pyc
-*.pyo
-*.pyd
+*.py[cod]
+*$py.class
+*.so
 .Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual Environment
 env/
 venv/
 ENV/
 env.bak/
 venv.bak/
 
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
 
-# Ignore Chroma DB directory
-embeddings/
+# Logs
+*.log
+*.log.*
+server.log
 
-# Defensive ignores for DB artifacts anywhere
-*.parquet
-*.sqlite3
-*.db
-manifest.json
+# Environment variables
 .env
-/data-cleaning
+.env.local
+.env.*.local
+
+# ChromaDB
+embeddings/chroma_db/
+embeddings/*.sqlite3
+
+# Temporary files
+*.tmp
+*.temp
+/tmp/
+*.wav
+*.mp3
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Backup files
+*.old
+*.backup
+*.bak
+
+# Test files
+test_*.wav
+test_*.mp3

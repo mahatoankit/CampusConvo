@@ -42,6 +42,7 @@ STT_LANGUAGE = os.getenv("STT_LANGUAGE", "en")
 # TTS (Text-to-Speech) settings
 TTS_ENGINE = os.getenv("TTS_ENGINE", "gtts")  # Options: gtts, pyttsx3
 TTS_LANGUAGE = os.getenv("TTS_LANGUAGE", "en")
+TTS_ACCENT = os.getenv("TTS_ACCENT", "com")  # Options: com (US), co.uk (British), co.in (Indian), com.au (Australian)
 
 # Audio settings
 AUDIO_SAMPLE_RATE = int(os.getenv("AUDIO_SAMPLE_RATE", 16000))

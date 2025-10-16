@@ -68,7 +68,7 @@ class RAGPipeline:
                 else:
                     genai.configure(api_key=api_key)
                     self.llm = genai.GenerativeModel('gemini-2.0-flash-exp')
-                    logger.info("✓ Google Gemini initialized successfully - GENERATIVE RESPONSES ENABLED")
+                    logger.info("[OK] Google Gemini initialized successfully - GENERATIVE RESPONSES ENABLED")
             except Exception as e:
                 logger.error(f"Failed to initialize Gemini: {e}")
                 logger.warning("Falling back to context-only responses")
@@ -215,21 +215,24 @@ Context from Sunway College database:
 Student Question: {query}
 
 Instructions:
-- Answer in a natural, conversational way
+- Answer ONLY what the student asked - no extra information
+- If they ask for location, give ONLY the address
+- If they ask for contact, give ONLY contact details
+- If they ask for a specific detail, provide ONLY that detail
 - Use ONLY information from the context above
-- Be concise (2-3 sentences max)
+- Be direct and concise (1-2 sentences)
 - If the context doesn't contain the answer, say "I don't have that specific information in my database."
-- Don't make up information
+- Don't add unrequested details like phone numbers, addresses, or other information unless specifically asked
 
 Answer:"""
         
         try:
-            logger.info("🚀 Generating GENERATIVE response with Google Gemini...")
+            logger.info(" Generating GENERATIVE response with Google Gemini...")
             
             response = self.llm.generate_content(prompt)
             generated_text = response.text
             
-            logger.info(f"✓ Generated response: {generated_text[:100]}...")
+            logger.info(f"[OK] Generated response: {generated_text[:100]}...")
             return generated_text
             
         except Exception as e:

@@ -36,13 +36,13 @@ class VoicePipeline:
             logger.info(f"Loading Whisper model: {config.STT_MODEL}")
             logger.info("This may take a while on first run (downloading model)...")
             self.whisper_model = whisper.load_model(config.STT_MODEL)
-            logger.info("✓ Whisper STT initialized successfully")
+            logger.info("[OK] Whisper STT initialized successfully")
         except Exception as e:
             logger.error(f"Failed to load Whisper: {e}")
             self.enabled = False
             return
         
-        logger.info("✓ Voice Pipeline initialization complete")
+        logger.info("[OK] Voice Pipeline initialization complete")
     
     def transcribe_audio(self, audio_data: bytes) -> str:
         """
@@ -64,7 +64,7 @@ class VoicePipeline:
                 temp_audio_path = temp_audio.name
             
             # Transcribe with Whisper
-            logger.info(f"🎙️  Transcribing audio ({len(audio_data)} bytes)...")
+            logger.info(f"  Transcribing audio ({len(audio_data)} bytes)...")
             result = self.whisper_model.transcribe(
                 temp_audio_path,
                 language=config.STT_LANGUAGE
@@ -74,7 +74,7 @@ class VoicePipeline:
             Path(temp_audio_path).unlink()
             
             transcription = result["text"].strip()
-            logger.info(f"✓ Transcription: {transcription}")
+            logger.info(f"[OK] Transcription: {transcription}")
             
             return transcription
             
@@ -96,10 +96,16 @@ class VoicePipeline:
             raise RuntimeError("Voice features not enabled")
         
         try:
-            logger.info(f"🔊 Synthesizing speech: {text[:50]}...")
+            logger.info(f" Synthesizing speech: {text[:50]}...")
             
             # Generate speech with gTTS
-            tts = gTTS(text=text, lang=config.TTS_LANGUAGE, slow=False)
+            # Use accent from config (com = US, co.in = Indian, co.uk = British)
+            tts = gTTS(
+                text=text, 
+                lang=config.TTS_LANGUAGE, 
+                slow=False,
+                tld=config.TTS_ACCENT
+            )
             
             # Save to bytes buffer
             audio_buffer = io.BytesIO()
@@ -107,7 +113,7 @@ class VoicePipeline:
             audio_buffer.seek(0)
             
             audio_data = audio_buffer.read()
-            logger.info(f"✓ Generated audio: {len(audio_data)} bytes")
+            logger.info(f"[OK] Generated audio: {len(audio_data)} bytes")
             
             return audio_data
             
