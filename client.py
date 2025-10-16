@@ -401,7 +401,9 @@ def main():
             asyncio.run(send_query(query, SERVER_URL))
     else:
         # Interactive mode - let user choose text or voice
+        print("DEBUG: Entering mode selection...")  # Debug line
         mode = choose_mode()
+        print(f"DEBUG: Selected mode = {mode}")  # Debug line
         
         if mode == 'text':
             asyncio.run(interactive_mode(SERVER_URL))
