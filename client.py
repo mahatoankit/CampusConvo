@@ -3,9 +3,9 @@ CampusConvo WebSocket Client
 Simple client for querying the CampusConvo server
 
 Usage:
-    python client_simple.py                    # Interactive mode
-    python client_simple.py test               # Test mode with predefined queries
-    python client_simple.py "your question"    # Single query mode
+    python client.py                    # Interactive mode
+    python client.py test               # Test mode with predefined queries
+    python client.py "your question"    # Single query mode
     
 Network Usage (change SERVER_URL):
     SERVER_URL = "ws://192.168.1.100:8000/ws"  # Remote server
@@ -31,7 +31,8 @@ async def send_query(query: str, server_url: str = SERVER_URL, top_k: int = 5):
         top_k: Number of documents to retrieve
     """
     try:
-        async with websockets.connect(server_url, timeout=30) as websocket:
+        # Connect without timeout parameter (Termux compatibility)
+        async with websockets.connect(server_url) as websocket:
             print(f"\n{'='*60}")
             print(f"Query: {query}")
             print(f"{'='*60}")
@@ -104,7 +105,8 @@ async def interactive_mode(server_url: str = SERVER_URL):
     print("Connecting to server...")
     
     try:
-        async with websockets.connect(server_url, timeout=10) as websocket:
+        # Connect without timeout parameter (Termux compatibility)
+        async with websockets.connect(server_url) as websocket:
             print("✓ Connected successfully!")
             print("\nType your questions (or 'quit' to exit)")
             print("-"*60)
@@ -204,18 +206,18 @@ def print_usage():
 CampusConvo WebSocket Client
 
 Usage:
-    python client_simple.py                    # Interactive mode
-    python client_simple.py test               # Test mode
-    python client_simple.py "your question"    # Single query
+    python client.py                    # Interactive mode
+    python client.py test               # Test mode
+    python client.py "your question"    # Single query
     
 Network Usage:
     Edit SERVER_URL in the script:
     SERVER_URL = "ws://192.168.1.100:8000/ws"  # Your server IP
     
 Examples:
-    python client_simple.py
-    python client_simple.py test
-    python client_simple.py "What courses are available?"
+    python client.py
+    python client.py test
+    python client.py "What courses are available?"
     """)
 
 
