@@ -253,3 +253,39 @@ This simplified architecture makes it easier to:
 - Significantly improved portability
 
 This is a textbook example of successful refactoring: **improved the code without breaking anything**. 🚀
+
+---
+
+# Universal Audio Support - Latest Update
+
+## Date: October 16, 2025
+
+## Problem Fixed
+❌ Client was hardcoded for Termux → failed on Linux desktop  
+❌ Error: "termux-microphone-record: not found"  
+
+## Solution
+✅ Universal audio detection - works on ANY Linux machine  
+✅ Auto-detects: ALSA, FFmpeg, SoX, or Termux  
+
+## Changes
+
+### `client.py` - Universal Audio
+- Added `detect_audio_system()` - auto-detection
+- Updated `record_audio()` - multi-platform support
+- Updated `play_audio()` - cross-platform playback
+
+### New Files
+- `test_audio.py` - Test your audio setup
+- `AUDIO_SETUP.md` - Universal setup guide
+
+### Your System
+✅ Detected: ALSA (arecord)  
+✅ Ready for voice mode!
+
+## Test It
+```bash
+python test_audio.py
+python client.py → v
+```
+

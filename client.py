@@ -108,27 +108,103 @@ async def send_query(query: str, server_url: str = SERVER_URL, top_k: int = 5):
 
 # ==================== VOICE MODE FUNCTIONS ====================
 
-def record_audio(duration=5, output_file="/sdcard/Download/query.wav"):
-    """Record audio using Termux API"""
+def detect_audio_system():
+    """Detect which audio recording system is available"""
+    # Check for Termux
+    if os.path.exists("/data/data/com.termux"):
+        if subprocess.run("which termux-microphone-record", shell=True, capture_output=True).returncode == 0:
+            return "termux"
+    
+    # Check for arecord (ALSA - most Linux systems)
+    if subprocess.run("which arecord", shell=True, capture_output=True).returncode == 0:
+        return "alsa"
+    
+    # Check for ffmpeg
+    if subprocess.run("which ffmpeg", shell=True, capture_output=True).returncode == 0:
+        return "ffmpeg"
+    
+    # Check for sox
+    if subprocess.run("which sox", shell=True, capture_output=True).returncode == 0:
+        return "sox"
+    
+    return None
+
+
+def record_audio(duration=5, output_file=None):
+    """
+    Record audio using available system tools
+    
+    Args:
+        duration: Recording duration in seconds
+        output_file: Output file path (auto-generated if None)
+    
+    Returns:
+        Path to recorded audio file or None on failure
+    """
+    audio_system = detect_audio_system()
+    
+    if audio_system is None:
+        print("❌ No audio recording tool found!")
+        print("Install one of:")
+        print("  - Termux: pkg install termux-api")
+        print("  - Linux: sudo apt install alsa-utils")
+        print("  - Alternative: sudo apt install ffmpeg")
+        print("  - Alternative: sudo apt install sox")
+        return None
+    
+    # Set output file based on system
+    if output_file is None:
+        if audio_system == "termux":
+            output_file = "/sdcard/Download/query.wav"
+        else:
+            output_file = "/tmp/campusconvo_query.wav"
+    
     print(f"🎙️  Recording for {duration} seconds...")
     print("Speak now!")
     
     try:
-        cmd = f"termux-microphone-record -f {output_file} -l {duration}"
+        if audio_system == "termux":
+            cmd = f"termux-microphone-record -f {output_file} -l {duration}"
+        elif audio_system == "alsa":
+            # arecord: -d duration, -f format, -r rate
+            cmd = f"arecord -d {duration} -f cd -t wav {output_file}"
+        elif audio_system == "ffmpeg":
+            # ffmpeg: -f alsa, -i device, -t duration
+            cmd = f"ffmpeg -f alsa -i default -t {duration} -y {output_file} 2>/dev/null"
+        elif audio_system == "sox":
+            # sox/rec: -r rate, -c channels, -b bits
+            cmd = f"rec -r 16000 -c 1 -b 16 {output_file} trim 0 {duration}"
+        
         subprocess.run(cmd, shell=True, check=True)
         print("✓ Recording complete")
         return output_file
     except Exception as e:
         print(f"❌ Recording failed: {e}")
-        print("Make sure termux-api is installed: pkg install termux-api")
         return None
 
 
 def play_audio(audio_file):
-    """Play audio using Termux API"""
+    """Play audio using available system tools"""
+    if not os.path.exists(audio_file):
+        print(f"⚠️  Audio file not found: {audio_file}")
+        return
+    
     try:
         print("🔊 Playing response...")
-        cmd = f"termux-media-player play {audio_file}"
+        
+        # Detect playback system
+        if os.path.exists("/data/data/com.termux"):
+            cmd = f"termux-media-player play {audio_file}"
+        elif subprocess.run("which aplay", shell=True, capture_output=True).returncode == 0:
+            cmd = f"aplay {audio_file}"
+        elif subprocess.run("which ffplay", shell=True, capture_output=True).returncode == 0:
+            cmd = f"ffplay -nodisp -autoexit {audio_file} 2>/dev/null"
+        elif subprocess.run("which play", shell=True, capture_output=True).returncode == 0:
+            cmd = f"play {audio_file}"
+        else:
+            print("⚠️  No audio player found")
+            return
+        
         subprocess.run(cmd, shell=True)
     except Exception as e:
         print(f"⚠️  Could not play audio: {e}")
@@ -401,9 +477,7 @@ def main():
             asyncio.run(send_query(query, SERVER_URL))
     else:
         # Interactive mode - let user choose text or voice
-        print("DEBUG: Entering mode selection...")  # Debug line
         mode = choose_mode()
-        print(f"DEBUG: Selected mode = {mode}")  # Debug line
         
         if mode == 'text':
             asyncio.run(interactive_mode(SERVER_URL))

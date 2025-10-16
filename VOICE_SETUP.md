@@ -52,28 +52,48 @@ Choose mode (T/V):
 - Gets AI response from RAG pipeline
 - Displays text response (no audio playback yet)
 
-## 📱 Termux Setup for Voice Mode
+## 📱 Audio Setup (Any Linux Machine)
 
-### Prerequisites
+### Automatic Detection
+The client automatically detects available audio recording tools:
+- **Termux**: termux-microphone-record (Android/Termux)
+- **ALSA**: arecord (most Linux desktops)
+- **FFmpeg**: ffmpeg audio capture
+- **SoX**: rec command
+
+### Check Your System
 ```bash
-# Install Termux API app from F-Droid
-# https://f-droid.org/en/packages/com.termux.api/
-
-# Install termux-api package in Termux
-pkg install termux-api
-
-# Give microphone permissions to Termux:API app in Android settings
+python -c "from client import detect_audio_system; print(f'Audio system: {detect_audio_system()}')"
 ```
 
-### Test Microphone
-```bash
-# Test recording (creates test.wav)
-termux-microphone-record -f test.wav -d 3
-# Wait 3 seconds
-termux-microphone-record -q
+### Install Audio Tools (if needed)
 
-# Check if file exists
-ls -lh test.wav
+#### Ubuntu/Debian Desktop
+```bash
+# Usually already installed
+sudo apt install alsa-utils
+```
+
+#### Termux (Android)
+```bash
+# Install Termux API app from F-Droid first
+# https://f-droid.org/en/packages/com.termux.api/
+pkg install termux-api
+```
+
+#### Alternative Tools
+```bash
+# FFmpeg (alternative)
+sudo apt install ffmpeg
+
+# SoX (alternative)
+sudo apt install sox
+```
+
+### Test Recording
+```bash
+# Test 3-second recording
+python -c "from client import record_audio; record_audio(3, '/tmp/test.wav')"
 ```
 
 ## 🔧 Configuration
