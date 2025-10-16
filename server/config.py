@@ -7,7 +7,7 @@ import os
 from pathlib import Path
 
 # Network settings - UPDATE THIS WHEN YOU CHANGE NETWORKS
-SERVER_IP = os.getenv("SERVER_IP", "192.168.23.187")  # Change this to your laptop's IP
+SERVER_IP = os.getenv("SERVER_IP", "192.168.254.135")  # Change this to your laptop's IP
 
 # Server settings
 HOST = os.getenv("HOST", "0.0.0.0")
