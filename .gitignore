@@ -1,0 +1,25 @@
+/env
+/venv
+/tasks
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+
+# Ignore Chroma DB directory
+embeddings/
+
+# Defensive ignores for DB artifacts anywhere
+*.parquet
+*.sqlite3
+*.db
+manifest.json
+.env
+/data-cleaning

@@ -124,7 +124,7 @@ The project features a **mascot named Zyra**, representing a smart, approachable
 
 ## Wake Word Integration
 
-* **Wake word:** “Zyra”
+* **Wake word:** “hello Zyra”
 * **Function:** Activates STT pipeline only when detected, reducing CPU load and preserving privacy
 * **Implementation Flow:**
 
@@ -142,22 +142,29 @@ Audio Input → Wake Word Detector → STT → GPU Server / RAG → LLM → TTS 
 
 ## Usage
 
-1. Start GPU server:
+Once the setup is complete, you can interact with the system:
 
+### Step 1: Start the Server
 ```bash
-python server.py
+python run_server.py
 ```
 
-2. Start client (Pi, Termux, or mobile/web interface):
+### Step 2: Start the Client (in a separate terminal)
 
+**Interactive Mode:**
 ```bash
-python client.py
+python client_simple.py
 ```
 
-3. Say the wake word: “Zyra”
-4. Speak your query after wake word detection
-5. Assistant responds via TTS in real time
-6. Interrupting speech triggers barge-in and immediate response to new query
+**Test Mode:**
+```bash
+python client_simple.py test
+```
+
+**Single Query:**
+```bash
+python client_simple.py "What courses are offered?"
+```
 
 ---
 
