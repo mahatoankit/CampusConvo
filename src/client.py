@@ -292,7 +292,8 @@ def main():
                 print(f"[ERROR] Transcription failed: {error_msg}")
                 continue
 
-            query_text = transcribe_result.get("text", "").strip()
+            # Server returns "transcription" not "text"
+            query_text = transcribe_result.get("transcription", "").strip()
 
             if not query_text:
                 print("\n[YOU] (no speech detected)")
