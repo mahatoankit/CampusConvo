@@ -257,6 +257,21 @@ def main():
                 audio_data = f.read()
                 audio_b64 = base64.b64encode(audio_data).decode("utf-8")
 
+            print(f"[DEBUG] Audio file size: {len(audio_data)} bytes")
+
+            # Verify it's a valid WAV file
+            if not audio_data.startswith(b"RIFF") or b"WAVE" not in audio_data[:50]:
+                print("[WARNING] Audio file may be corrupted (not a valid WAV)")
+
+            # Keep a copy for debugging if transcription fails
+            debug_file = f"/tmp/campusconvo_audio_debug_{conversation_count}.wav"
+            try:
+                with open(debug_file, "wb") as df:
+                    df.write(audio_data)
+                print(f"[DEBUG] Audio saved to {debug_file} for debugging")
+            except Exception:
+                pass
+
             transcribe_response = requests.post(
                 f"{HTTP_SERVER_URL}/voice/transcribe",
                 json={"audio": audio_b64},
@@ -264,12 +279,17 @@ def main():
             )
 
             if transcribe_response.status_code != 200:
-                print("[ERROR] Transcription failed")
+                print(f"[ERROR] Transcription failed with status {transcribe_response.status_code}")
+                try:
+                    print(f"[DEBUG] Response: {transcribe_response.text}")
+                except Exception:
+                    pass
                 continue
 
             transcribe_result = transcribe_response.json()
             if transcribe_result.get("status") != "success":
-                print("[ERROR] Transcription failed")
+                error_msg = transcribe_result.get("error", "Unknown error")
+                print(f"[ERROR] Transcription failed: {error_msg}")
                 continue
 
             query_text = transcribe_result.get("text", "").strip()
