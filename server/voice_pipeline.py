@@ -6,6 +6,7 @@ Server-side processing for minimal client load
 
 import io
 import logging
+import sys
 import tempfile
 from pathlib import Path
 
@@ -101,8 +102,18 @@ class VoicePipeline:
         self.enabled = True
 
         # Detect device (GPU vs CPU)
+        logger.info(f"[DEBUG] Python executable: {sys.executable}")
+        logger.info(f"[DEBUG] PyTorch version: {torch.__version__}")
+        logger.info(f"[DEBUG] CUDA built: {torch.cuda.is_built()}")
         logger.info(f"[DEBUG] config.USE_GPU = {config.USE_GPU}")
         logger.info(f"[DEBUG] torch.cuda.is_available() = {torch.cuda.is_available()}")
+        
+        if torch.cuda.is_available():
+            logger.info(f"[DEBUG] CUDA device count: {torch.cuda.device_count()}")
+            try:
+                logger.info(f"[DEBUG] CUDA device 0 name: {torch.cuda.get_device_name(0)}")
+            except Exception as e:
+                logger.error(f"[DEBUG] Error getting device name: {e}")
         
         if config.USE_GPU and torch.cuda.is_available():
             self.device = "cuda"
