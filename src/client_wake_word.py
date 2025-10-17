@@ -3,7 +3,7 @@ CampusConvo Voice Assistant with Wake Word
 Voice-only assistant with continuous local wake word detection (like Alexa/Siri)
 
 Usage:
-    python3 client.py    # Start voice assistant (say "Hello Zyra" to activate)
+    python src/client_wake_word.py    # Start voice assistant (say "Hello Zyra" to activate)
     
 Wake Word:
     Say "Hello Zyra" to start a conversation
@@ -24,10 +24,15 @@ import threading
 import time
 import warnings
 import wave
+from pathlib import Path
 
-import pyaudio
-import webrtcvad
-import websockets
+# Add project root to path
+project_root = Path(__file__).parent.parent
+sys.path.insert(0, str(project_root))
+
+import pyaudio  # noqa: E402
+import webrtcvad  # noqa: E402
+import websockets  # noqa: E402
 
 # Optional Porcupine import (requires API key)
 try:
@@ -70,7 +75,7 @@ try:
         GOODBYE_MESSAGE,
         GREETING_MESSAGE,
         HTTP_SERVER_URL,
-    # MAX_CONSECUTIVE_ERRORS,  # unused
+        # MAX_CONSECUTIVE_ERRORS,  # unused
         MAX_RECORDING_DURATION,
         PORCUPINE_ACCESS_KEY,
         PORCUPINE_KEYWORDS,

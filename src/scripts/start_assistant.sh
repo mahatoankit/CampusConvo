@@ -3,6 +3,9 @@
 # Quick Start Script for CampusConvo Voice Assistant
 # No API keys needed!
 
+# Change to project root (script is in src/scripts/)
+cd "$(dirname "$0")/../.." || exit 1
+
 echo "============================================================"
 echo "  CampusConvo Voice Assistant - Quick Start"
 echo "============================================================"
@@ -26,7 +29,7 @@ if ! curl -s http://localhost:8000/health > /dev/null 2>&1; then
     echo "⚠️  Server not detected on localhost:8000"
     echo ""
     echo "Starting server in background..."
-    python run_server.py > /tmp/campusconvo_server.log 2>&1 &
+    python src/scripts/run_server.py > /tmp/campusconvo_server.log 2>&1 &
     SERVER_PID=$!
     echo "   Server PID: $SERVER_PID"
     echo "   Logs: /tmp/campusconvo_server.log"
@@ -48,4 +51,4 @@ echo ""
 echo "Press Enter to start..."
 read
 
-python client.py
+python src/client.py

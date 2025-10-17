@@ -1,6 +1,9 @@
 #!/bin/bash
 # Quick setup script for CampusConvo
 
+# Change to project root (script is in src/scripts/)
+cd "$(dirname "$0")/../.." || exit 1
+
 echo "======================================================"
 echo "CampusConvo - Quick Setup"
 echo "======================================================"
@@ -27,7 +30,7 @@ echo "Data file found: $(wc -l < data/processed/processed.jsonl) entries"
 
 echo ""
 echo "Step 3: Generating embeddings..."
-python run_embeddings.py
+python src/scripts/run_embeddings.py
 
 if [ $? -ne 0 ]; then
     echo "Error: Failed to generate embeddings"
@@ -40,11 +43,12 @@ echo "Setup Complete!"
 echo "======================================================"
 echo ""
 echo "To start the server:"
-echo "  python run_server.py"
+echo "  python src/scripts/run_server.py"
 echo ""
 echo "To start the client (in another terminal):"
-echo "  python run_client.py"
+echo "  python src/client.py"
 echo ""
-echo "For test mode:"
-echo "  python run_client.py test"
+echo "Or use make commands:"
+echo "  make run-server"
+echo "  make run-client"
 echo "======================================================"

@@ -5,12 +5,17 @@ Implements TASK3 - Generate Embeddings and Vector DB
 
 import json
 import logging
+import sys
 from pathlib import Path
 from typing import Dict, List
 
-import chromadb
-from sentence_transformers import SentenceTransformer
-from tqdm import tqdm
+# Add project root to path
+project_root = Path(__file__).parent.parent.parent
+sys.path.insert(0, str(project_root))
+
+import chromadb  # noqa: E402
+from sentence_transformers import SentenceTransformer  # noqa: E402
+from tqdm import tqdm  # noqa: E402
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)

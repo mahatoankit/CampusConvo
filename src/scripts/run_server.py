@@ -3,9 +3,15 @@ Run CampusConvo FastAPI Server
 """
 
 import logging
+import sys
+from pathlib import Path
 
-import uvicorn
-from dotenv import load_dotenv
+# Add project root to path
+project_root = Path(__file__).parent.parent.parent
+sys.path.insert(0, str(project_root))
+
+import uvicorn  # noqa: E402
+from dotenv import load_dotenv  # noqa: E402
 
 # Load environment variables from .env file FIRST
 load_dotenv()

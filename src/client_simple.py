@@ -3,7 +3,7 @@ CampusConvo Voice Assistant - Simple Mode
 Just run and start talking! No wake word needed.
 
 Usage:
-    python client_simple.py
+    python src/client_simple.py
     
 Commands:
     Just speak your question naturally
@@ -15,9 +15,14 @@ import os
 import sys
 import time
 import wave
+from pathlib import Path
 
-import pyaudio
-import webrtcvad
+# Add project root to path
+project_root = Path(__file__).parent.parent
+sys.path.insert(0, str(project_root))
+
+import pyaudio  # noqa: E402
+import webrtcvad  # noqa: E402
 
 # Import configuration
 try:

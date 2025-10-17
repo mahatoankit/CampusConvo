@@ -27,7 +27,13 @@ clean:
 	rm -rf .pytest_cache .mypy_cache ruff_cache .ruff_cache
 
 run-server:
-	$(PY) run_server.py
+	$(PY) src/scripts/run_server.py
 
 run-client:
-	$(PY) client.py
+	$(PY) src/client.py
+
+run-client-simple:
+	$(PY) src/client_simple.py
+
+run-client-wake:
+	$(PY) src/client_wake_word.py
