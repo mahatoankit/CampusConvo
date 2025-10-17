@@ -14,8 +14,32 @@ import base64
 import os
 import sys
 import time
+import warnings
 import wave
 from pathlib import Path
+
+# Suppress ALSA warnings
+warnings.filterwarnings("ignore")
+os.environ["PYGAME_HIDE_SUPPORT_PROMPT"] = "1"
+
+try:
+    import ctypes
+
+    ERROR_HANDLER_FUNC = ctypes.CFUNCTYPE(
+        None, ctypes.c_char_p, ctypes.c_int, ctypes.c_char_p, ctypes.c_int, ctypes.c_char_p
+    )
+
+    def _alsa_error_handler(filename, line, function, err, fmt):
+        pass
+
+    _c_error_handler = ERROR_HANDLER_FUNC(_alsa_error_handler)
+    try:
+        _asound = ctypes.cdll.LoadLibrary("libasound.so.2")
+        _asound.snd_lib_error_set_handler(_c_error_handler)
+    except Exception:
+        pass
+except Exception:
+    pass
 
 # Add project root to path
 project_root = Path(__file__).parent.parent
@@ -55,18 +79,55 @@ RECORDING_RATE = 16000
 RECORDING_CHUNK = 320
 
 
+def _get_input_device_index(pa: pyaudio.PyAudio):
+    """Pick a reasonable input device index (prefer PulseAudio/default)."""
+    env_idx = os.getenv("MIC_DEVICE_INDEX")
+    if env_idx is not None:
+        try:
+            idx = int(env_idx)
+            info = pa.get_device_info_by_index(idx)
+            if info.get("maxInputChannels", 0) > 0:
+                return idx
+        except Exception:
+            pass
+
+    best = None
+    try:
+        count = pa.get_device_count()
+        for i in range(count):
+            info = pa.get_device_info_by_index(i)
+            if info.get("maxInputChannels", 0) > 0:
+                name = str(info.get("name", "")).lower()
+                if "pulse" in name or "default" in name:
+                    return i
+                if best is None:
+                    best = i
+    except Exception:
+        return None
+    return best
+
+
 def record_audio(output_file=TEMP_QUERY_FILE):
     """Record audio until silence is detected"""
     vad = webrtcvad.Vad(VAD_AGGRESSIVENESS)
     audio = pyaudio.PyAudio()
 
     try:
+        device_index = _get_input_device_index(audio)
+        if device_index is not None:
+            try:
+                dinfo = audio.get_device_info_by_index(device_index)
+                print(f"[AUDIO] Using input device #{device_index}: {dinfo.get('name')}")
+            except Exception:
+                print(f"[AUDIO] Using input device #{device_index}")
+
         stream = audio.open(
             format=FORMAT,
             channels=CHANNELS,
             rate=RECORDING_RATE,
             input=True,
             frames_per_buffer=RECORDING_CHUNK,
+            input_device_index=device_index if device_index is not None else None,
         )
 
         print("🎤 Listening... (speak now)")
