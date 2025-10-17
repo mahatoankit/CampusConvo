@@ -44,11 +44,32 @@ STT_MODEL = os.getenv("STT_MODEL", "base")  # Options: tiny, base, small, medium
 STT_LANGUAGE = os.getenv("STT_LANGUAGE", "en")
 
 # TTS (Text-to-Speech) settings
-TTS_ENGINE = os.getenv("TTS_ENGINE", "gtts")  # Options: gtts, pyttsx3
+# Available engines:
+#   - gtts: Google TTS (online, basic quality, fast)
+#   - edge-tts: Microsoft Edge TTS (online, very natural, high quality)
+#   - piper: Piper TTS (offline, neural, fast, high quality) - RECOMMENDED
+#   - coqui: Coqui TTS (offline, neural, slower, very high quality)
+TTS_ENGINE = os.getenv("TTS_ENGINE", "gtts")
+
 TTS_LANGUAGE = os.getenv("TTS_LANGUAGE", "en")
+
+# gTTS accent (only for gtts engine)
 TTS_ACCENT = os.getenv(
     "TTS_ACCENT", "com"
 )  # Options: com (US), co.uk (British), co.in (Indian), com.au (Australian)
+
+# Edge TTS voice (only for edge-tts engine)
+# Popular voices: en-US-AriaNeural (female), en-US-GuyNeural (male), en-GB-SoniaNeural (British female)
+# Full list: https://speech.microsoft.com/portal/voicegallery
+TTS_EDGE_VOICE = os.getenv("TTS_EDGE_VOICE", "en-US-AriaNeural")
+
+# Piper TTS model (only for piper engine)
+# Quality levels: x_low, low, medium, high
+# Examples: en_US-lessac-medium (male), en_US-amy-medium (female), en_US-libritts-high (best quality)
+TTS_PIPER_MODEL = os.getenv("TTS_PIPER_MODEL", "en_US-lessac-medium")
+
+# Coqui TTS model (only for coqui engine)
+TTS_COQUI_MODEL = os.getenv("TTS_COQUI_MODEL", "tts_models/en/ljspeech/tacotron2-DDC")
 
 # Audio settings
 AUDIO_SAMPLE_RATE = int(os.getenv("AUDIO_SAMPLE_RATE", 16000))
