@@ -1,0 +1,157 @@
+# ============================================================================
+# CampusConvo - Unified Configuration File
+# ============================================================================
+# This is the SINGLE source of truth for all configuration settings.
+# Edit this file to customize your CampusConvo assistant.
+# ============================================================================
+
+# ----------------------------------------------------------------------------
+# SERVER SETTINGS
+# ----------------------------------------------------------------------------
+server:
+  host: "0.0.0.0"              # Listen on all interfaces (use 127.0.0.1 for localhost only)
+  port: 8000                   # Server port
+  log_level: "INFO"            # Options: DEBUG, INFO, WARNING, ERROR
+  server_ip: "192.168.254.135" # Your laptop's IP address (update when network changes)
+
+# ----------------------------------------------------------------------------
+# GOOGLE GEMINI API (for generating answers)
+# ----------------------------------------------------------------------------
+gemini:
+  api_key: "AIzaSyCaqO8LSJhswz7VCmUIZGgvYEtXzKGTn08"  # Get free key from: https://makersuite.google.com/app/apikey
+  use_llm: true                # Enable/disable LLM-powered responses
+
+# ----------------------------------------------------------------------------
+# GPU ACCELERATION
+# ----------------------------------------------------------------------------
+gpu:
+  enabled: true                # Auto-detect and use GPU if available (for Whisper STT)
+
+# ----------------------------------------------------------------------------
+# SPEECH-TO-TEXT (STT) - Whisper Settings
+# ----------------------------------------------------------------------------
+stt:
+  model: "medium"              # Options: tiny, base, small, medium, large
+                               #   tiny   - Fastest, least accurate (39MB)
+                               #   base   - Good balance (74MB) - Default for demos
+                               #   small  - Better accuracy (244MB)
+                               #   medium - High accuracy (769MB) - Recommended for production
+                               #   large  - Best accuracy (1550MB) - Slow
+  language: "en"               # Language code (en, es, fr, etc.)
+
+# ----------------------------------------------------------------------------
+# TEXT-TO-SPEECH (TTS) - Voice Output Settings
+# ----------------------------------------------------------------------------
+tts:
+  engine: "edge-tts"           # Options: gtts, edge-tts
+                               #   gtts     - Google TTS (basic, robotic)
+                               #   edge-tts - Microsoft Edge TTS (natural, high quality) - RECOMMENDED
+  
+  language: "en"               # Language code
+  
+  # gTTS settings (only used if engine=gtts)
+  gtts:
+    accent: "com"              # Options: com (US), co.uk (British), co.in (Indian), com.au (Australian)
+  
+  # Edge TTS settings (only used if engine=edge-tts)
+  edge:
+    voice: "en-US-AriaNeural"  # Popular voices:
+                               #   Female: en-US-AriaNeural, en-US-JennyNeural, en-US-MichelleNeural
+                               #   Male:   en-US-GuyNeural, en-US-ChristopherNeural, en-US-EricNeural
+                               #   British: en-GB-SoniaNeural (F), en-GB-RyanNeural (M)
+                               #   Indian: en-IN-NeerjaNeural (F), en-IN-PrabhatNeural (M)
+                               # Full list: https://speech.microsoft.com/portal/voicegallery
+
+# ----------------------------------------------------------------------------
+# RAG (Retrieval-Augmented Generation) Settings
+# ----------------------------------------------------------------------------
+rag:
+  # ChromaDB settings
+  chroma:
+    path: "embeddings/chroma_db"
+    collection_name: "college_documents"
+  
+  # Embedding model
+  embedding_model: "all-MiniLM-L6-v2"  # Sentence transformer model
+  
+  # Retrieval settings
+  default_top_k: 5              # Number of relevant documents to retrieve
+  similarity_threshold: 0.3     # Minimum similarity score (0.0 to 1.0)
+
+# ----------------------------------------------------------------------------
+# AUDIO SETTINGS
+# ----------------------------------------------------------------------------
+audio:
+  sample_rate: 16000            # Audio sample rate in Hz (16kHz is standard for speech)
+  
+  # Voice Activity Detection (VAD)
+  vad:
+    aggressiveness: 3           # 0 (least aggressive) to 3 (most aggressive)
+                                # Higher = more strict about what counts as speech
+                                # Try 1 or 2 if having trouble with detection
+  
+  # Recording settings
+  recording:
+    silence_threshold: 2.0      # Seconds of silence before stopping recording
+    max_duration: 10            # Maximum recording duration in seconds
+    min_consecutive_speech: 0.2 # Seconds of speech needed to start recording
+  
+  # Client audio settings
+  client:
+    rate: 16000                 # Sample rate (must match sample_rate above)
+    chunk: 320                  # Audio chunk size (20ms at 16kHz)
+    channels: 1                 # Mono audio
+
+# ----------------------------------------------------------------------------
+# WAKE WORD SETTINGS (for wake word client mode)
+# ----------------------------------------------------------------------------
+wake_word:
+  phrase: "hello zyra"          # Wake word phrase
+  alternatives:                 # Alternative pronunciations
+    - "helo zyra"
+    - "hello zira"
+    - "hello zera"
+    - "hey zyra"
+  
+  exit_commands:                # Commands to exit
+    - "bye zyra"
+    - "goodbye zyra"
+    - "exit"
+  
+  # Porcupine settings (optional - for dedicated wake word detection)
+  porcupine:
+    access_key: ""              # Get free key at: https://console.picovoice.ai/
+    keywords:                   # Built-in keywords: alexa, computer, jarvis, etc.
+      - "hey google"
+
+# ----------------------------------------------------------------------------
+# USER INTERFACE
+# ----------------------------------------------------------------------------
+ui:
+  greeting_message: "Hello there, how may I assist you today?"
+  goodbye_message: "Goodbye! Have a great day!"
+  assistant_name: "ZYRA"       # Name shown in prompts
+  
+  # Error handling
+  max_consecutive_errors: 3    # Exit after this many consecutive errors
+  request_timeout: 30          # HTTP request timeout in seconds
+
+# ----------------------------------------------------------------------------
+# TEMPORARY FILES
+# ----------------------------------------------------------------------------
+temp:
+  audio_dir: "/tmp"
+  query_file: "/tmp/campusconvo_query.wav"
+  greeting_file: "/tmp/campusconvo_greeting.mp3"
+  goodbye_file: "/tmp/campusconvo_goodbye.mp3"
+  response_file: "/tmp/campusconvo_response.mp3"
+
+# ============================================================================
+# NOTES:
+# ============================================================================
+# 1. Server IP: Update 'server.server_ip' when you change networks
+# 2. GPU: Automatically detected if available (NVIDIA CUDA required)
+# 3. TTS Quality: edge-tts provides much better voice quality than gtts
+# 4. STT Model: 'medium' is recommended for good accuracy without being too slow
+# 5. VAD Aggressiveness: If microphone isn't detecting speech, lower to 1 or 2
+# ============================================================================
