@@ -1,6 +1,41 @@
 # Python
 __pycache__/
 *.py[cod]
+*.pyo
+*.pyd
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Environments
+.env
+.venv/
+venv/
+env/
+
+# Editors/OS
+.DS_Store
+.idea/
+.vscode/
+
+# Data & embeddings (generated)
+data/
+embeddings/
+*.sqlite3
+
+# Logs & artifacts
+*.log
+*.tmp
+*.cache
+dist/
+build/
+
+# Local configs
+*.local
+*.secret
+# Python
+__pycache__/
+*.py[cod]
 *$py.class
 *.so
 .Python

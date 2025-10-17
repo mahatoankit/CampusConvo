@@ -1,4 +1,31 @@
 # Repository Cleanup Summary
+Repository cleanup (October 17, 2025)
+
+Changes made:
+
+- Added .gitignore to exclude:
+	- Virtual envs: env/, venv/, .venv/
+	- Python caches: __pycache__/, *.py[cod], .pytest_cache/, .ruff_cache/
+	- Editor/OS files: .vscode/, .idea/, .DS_Store
+	- Generated artifacts: data/, embeddings/, *.sqlite3, logs
+- Introduced pyproject.toml with Black and Ruff configuration (line length 100, Python 3.10).
+- Added dev-requirements.txt with Black and Ruff.
+- Created Makefile with targets: setup, dev, format, lint, clean, run-server, run-client.
+- Removed backup file client.py.backup.
+
+Next steps (optional):
+
+- If data/ or embeddings/ are already tracked, untrack them while keeping files locally:
+	git rm -r --cached data embeddings
+	git commit -m "chore: untrack generated data and embeddings"
+
+- Run formatting and lint:
+	make format
+	make lint
+
+Notes:
+
+- The .gitignore excludes data/ and embeddings/ by default. Move any small, non-generated sample data (if needed for tests) into a dedicated, versioned folder such as tests/fixtures/.
 
 ## Files Removed
 
