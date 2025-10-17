@@ -101,6 +101,9 @@ class VoicePipeline:
         self.enabled = True
 
         # Detect device (GPU vs CPU)
+        logger.info(f"[DEBUG] config.USE_GPU = {config.USE_GPU}")
+        logger.info(f"[DEBUG] torch.cuda.is_available() = {torch.cuda.is_available()}")
+        
         if config.USE_GPU and torch.cuda.is_available():
             self.device = "cuda"
             gpu_name = torch.cuda.get_device_name(0)
