@@ -1,12 +1,8 @@
 [tool.black]
 line-length = 100
 target-version = ["py310"]
-extend-exclude = [
-  "env",
-  "venv",
-  "data",
-  "embeddings",
-]
+# Exclude additional directories via regex
+extend-exclude = "(env|venv|data|embeddings)/"
 
 [tool.ruff]
 line-length = 100
@@ -22,6 +18,7 @@ select = [
 ]
 ignore = [
   "E203",  # whitespace before ':' (black compatibility)
+  "E501",  # line too long (allow for prompt text and URLs)
 ]
 
 [tool.ruff.format]
