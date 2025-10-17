@@ -304,6 +304,63 @@ async def transcribe_audio(request: VoiceRequest):
         return VoiceResponse(status="error", error=str(e))
 
 
+@app.post("/voice/query")
+async def voice_query(request: VoiceRequest):
+    """
+    Complete voice pipeline: transcribe audio → query RAG → synthesize response
+
+    Args:
+        request: VoiceRequest with base64 encoded audio
+
+    Returns:
+        Dict with status, answer (text), and audio (base64)
+    """
+    if voice_pipeline is None or not voice_pipeline.enabled:
+        raise HTTPException(status_code=503, detail="Voice features not available")
+    if rag_pipeline is None:
+        raise HTTPException(status_code=503, detail="RAG pipeline not initialized")
+
+    try:
+        # Step 1: Transcribe audio
+        audio_data = base64.b64decode(request.audio)
+        logger.info(f"Voice query: Received audio ({len(audio_data)} bytes)")
+
+        transcribe_result = voice_pipeline.process_voice_query(audio_data)
+        if transcribe_result["status"] != "success":
+            return {
+                "status": "error",
+                "error": transcribe_result.get("error", "Transcription failed"),
+            }
+
+        query_text = transcribe_result.get("transcription", "").strip()
+        if not query_text:
+            return {"status": "error", "error": "Empty transcription"}
+
+        logger.info(f"Voice query: Transcribed: '{query_text}'")
+
+        # Step 2: Query RAG pipeline
+        rag_result = rag_pipeline.process_query(query=query_text)
+        answer_text = rag_result.get("response", "")
+
+        logger.info(f"Voice query: Generated answer ({len(answer_text)} chars)")
+
+        # Step 3: Synthesize speech
+        audio_data = voice_pipeline.synthesize_speech(answer_text)
+        audio_b64 = base64.b64encode(audio_data).decode("utf-8")
+
+        return {
+            "status": "success",
+            "query": query_text,
+            "answer": answer_text,
+            "audio": audio_b64,
+            "sources": rag_result.get("sources", []),
+        }
+
+    except Exception as e:
+        logger.error(f"Error in voice query endpoint: {e}", exc_info=True)
+        return {"status": "error", "error": str(e)}
+
+
 @app.post("/voice/synthesize", response_model=TTSResponse)
 async def synthesize_speech(request: TTSRequest):
     """

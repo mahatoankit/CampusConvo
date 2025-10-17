@@ -34,6 +34,9 @@ LLM_MAX_TOKENS = int(os.getenv("LLM_MAX_TOKENS", 512))
 # Voice settings
 ENABLE_VOICE = os.getenv("ENABLE_VOICE", "true").lower() == "true"
 
+# Device settings (GPU support)
+USE_GPU = os.getenv("USE_GPU", "true").lower() == "true"  # Auto-detect and use GPU if available
+
 # STT (Speech-to-Text) settings
 # Model sizes: tiny (39MB), base (74MB), small (244MB), medium (769MB), large (1550MB)
 # Recommended: 'base' for demos/hackathons (fast + accurate enough)

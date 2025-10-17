@@ -75,11 +75,27 @@ class VoicePipeline:
 
         self.enabled = True
 
+        # Detect device (GPU vs CPU)
+        import torch
+
+        if config.USE_GPU and torch.cuda.is_available():
+            self.device = "cuda"
+            gpu_name = torch.cuda.get_device_name(0)
+            logger.info(f"🚀 GPU detected: {gpu_name}")
+            logger.info(f"   CUDA version: {torch.version.cuda}")
+            logger.info("   Using GPU for Whisper acceleration")
+        else:
+            self.device = "cpu"
+            if config.USE_GPU:
+                logger.warning("⚠️  GPU requested but not available, falling back to CPU")
+            else:
+                logger.info("Using CPU for Whisper (GPU disabled in config)")
+
         # Load Whisper model for STT
         try:
-            logger.info(f"Loading Whisper model: {config.STT_MODEL}")
-            self.whisper_model = whisper.load_model(config.STT_MODEL)
-            logger.info("[OK] Whisper STT initialized successfully")
+            logger.info(f"Loading Whisper model: {config.STT_MODEL} on {self.device}")
+            self.whisper_model = whisper.load_model(config.STT_MODEL, device=self.device)
+            logger.info(f"[OK] Whisper STT initialized successfully on {self.device.upper()}")
         except Exception as e:
             logger.error(f"Failed to load Whisper: {e}")
             self.enabled = False
@@ -111,7 +127,11 @@ class VoicePipeline:
 
             # Transcribe with Whisper
             logger.info(f"  Transcribing audio ({len(audio_data)} bytes)...")
-            result = self.whisper_model.transcribe(temp_audio_path, language=config.STT_LANGUAGE)
+            # Use FP16 on GPU for faster inference, FP32 on CPU
+            fp16 = self.device == "cuda"
+            result = self.whisper_model.transcribe(
+                temp_audio_path, language=config.STT_LANGUAGE, fp16=fp16
+            )
 
             # Clean up temporary file
             Path(temp_audio_path).unlink()
