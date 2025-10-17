@@ -9,6 +9,7 @@ import logging
 import tempfile
 from pathlib import Path
 
+import torch
 import whisper
 from gtts import gTTS
 
@@ -76,8 +77,6 @@ class VoicePipeline:
         self.enabled = True
 
         # Detect device (GPU vs CPU)
-        import torch
-
         if config.USE_GPU and torch.cuda.is_available():
             self.device = "cuda"
             gpu_name = torch.cuda.get_device_name(0)
