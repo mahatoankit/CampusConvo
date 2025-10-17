@@ -104,7 +104,6 @@ class VoicePipeline:
         # Detect device (GPU vs CPU)
         logger.info(f"[DEBUG] Python executable: {sys.executable}")
         logger.info(f"[DEBUG] PyTorch version: {torch.__version__}")
-        logger.info(f"[DEBUG] CUDA built: {torch.cuda.is_built()}")
         logger.info(f"[DEBUG] config.USE_GPU = {config.USE_GPU}")
         logger.info(f"[DEBUG] torch.cuda.is_available() = {torch.cuda.is_available()}")
         
