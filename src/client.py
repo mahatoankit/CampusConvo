@@ -45,6 +45,7 @@ except Exception:
 project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
 
+import numpy as np  # noqa: E402
 import pyaudio  # noqa: E402
 import webrtcvad  # noqa: E402
 
@@ -107,6 +108,48 @@ def _get_input_device_index(pa: pyaudio.PyAudio):
     return best
 
 
+def play_beep(frequency=800, duration=0.15, sample_rate=16000):
+    """
+    Play a beep sound for audio feedback
+
+    Args:
+        frequency: Frequency in Hz (default 800Hz for pleasant tone)
+        duration: Duration in seconds (default 0.15s)
+        sample_rate: Sample rate in Hz
+    """
+    try:
+        # Generate sine wave
+        samples = int(sample_rate * duration)
+        t = np.linspace(0, duration, samples, False)
+
+        # Create a beep with fade in/out to avoid clicks
+        wave = np.sin(2 * np.pi * frequency * t)
+
+        # Apply fade envelope (20% fade in/out)
+        fade_samples = int(samples * 0.2)
+        fade_in = np.linspace(0, 1, fade_samples)
+        fade_out = np.linspace(1, 0, fade_samples)
+        wave[:fade_samples] *= fade_in
+        wave[-fade_samples:] *= fade_out
+
+        # Convert to 16-bit PCM
+        audio_data = (wave * 32767).astype(np.int16)
+
+        # Play using pyaudio
+        audio = pyaudio.PyAudio()
+        stream = audio.open(format=pyaudio.paInt16, channels=1, rate=sample_rate, output=True)
+        stream.write(audio_data.tobytes())
+        stream.stop_stream()
+        stream.close()
+        audio.terminate()
+    except Exception:
+        # Fallback to system beep or silent failure
+        try:
+            print("\a", end="", flush=True)  # Terminal bell
+        except Exception:
+            pass
+
+
 def record_audio(output_file=TEMP_QUERY_FILE):
     """Record audio until silence is detected"""
     vad = webrtcvad.Vad(VAD_AGGRESSIVENESS)
@@ -130,7 +173,9 @@ def record_audio(output_file=TEMP_QUERY_FILE):
             input_device_index=device_index if device_index is not None else None,
         )
 
+        # Play start beep (higher pitch = ready to speak)
         print("🎤 Listening... (speak now)")
+        play_beep(frequency=1000, duration=0.1)  # High beep = start
 
         frames = []
         speech_detected = False
@@ -161,6 +206,9 @@ def record_audio(output_file=TEMP_QUERY_FILE):
         stream.stop_stream()
         stream.close()
         audio.terminate()
+
+        # Play stop beep (lower pitch = done recording)
+        play_beep(frequency=600, duration=0.1)  # Low beep = stop
 
         if not speech_detected:
             print("❌ No speech detected - please speak louder or check your microphone")
