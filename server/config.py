@@ -46,10 +46,10 @@ STT_LANGUAGE = os.getenv("STT_LANGUAGE", "en")
 # TTS (Text-to-Speech) settings
 # Available engines:
 #   - gtts: Google TTS (online, basic quality, fast)
-#   - edge-tts: Microsoft Edge TTS (online, very natural, high quality)
-#   - piper: Piper TTS (offline, neural, fast, high quality) - RECOMMENDED
+#   - edge-tts: Microsoft Edge TTS (online, very natural, high quality) - RECOMMENDED
+#   - piper: Piper TTS (offline, neural, fast, high quality)
 #   - coqui: Coqui TTS (offline, neural, slower, very high quality)
-TTS_ENGINE = os.getenv("TTS_ENGINE", "gtts")
+TTS_ENGINE = os.getenv("TTS_ENGINE", "edge-tts")  # Changed to edge-tts for better quality
 
 TTS_LANGUAGE = os.getenv("TTS_LANGUAGE", "en")
 
