@@ -43,9 +43,9 @@ stt:
 # TEXT-TO-SPEECH (TTS) - Voice Output Settings
 # ----------------------------------------------------------------------------
 tts:
-  engine: "edge-tts"           # Options: gtts, edge-tts
-                               #   gtts     - Google TTS (basic, robotic)
-                               #   edge-tts - Microsoft Edge TTS (natural, high quality) - RECOMMENDED
+  engine: "gtts"               # Options: gtts, edge-tts
+                               # Temporarily using gtts for reliability
+                               # edge-tts has connection issues
   
   language: "en"               # Language code
   
