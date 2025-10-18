@@ -86,13 +86,14 @@ audio:
   
   # Voice Activity Detection (VAD)
   vad:
-    aggressiveness: 3           # 0 (least aggressive) to 3 (most aggressive)
-                                # Higher = more strict about what counts as speech
-                                # Try 1 or 2 if having trouble with detection
+    aggressiveness: 1           # 0 (least aggressive) to 3 (most aggressive)
+                                # Lower = more sensitive to speech detection
+                                # 1 = Good balance for most environments
   
   # Recording settings
   recording:
-    silence_threshold: 2.0      # Seconds of silence before stopping recording
+    silence_threshold: 1.0      # Seconds of silence before stopping recording
+                                # Lower = more responsive (stops sooner after you stop talking)
     max_duration: 10            # Maximum recording duration in seconds
     min_consecutive_speech: 0.2 # Seconds of speech needed to start recording
   

@@ -180,17 +180,7 @@ class RAGPipeline:
     def generate_response(
         self, query: str, retrieved_docs: List[Dict], stream: bool = False
     ) -> str:
-        """
-        Generate response using Google Gemini with retrieved context
 
-        Args:
-            query: User query
-            retrieved_docs: Retrieved context documents
-            stream: Whether to stream response
-
-        Returns:
-            Generated response text
-        """
         if not retrieved_docs:
             return "Sorry, I couldn't find information about that. Please try asking about courses, admissions, or facilities."
 
