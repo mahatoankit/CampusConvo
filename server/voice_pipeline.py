@@ -253,6 +253,8 @@ class VoicePipeline:
             raise RuntimeError("Voice features not enabled")
 
         try:
+            import time
+            start_time = time.time()
             logger.info(f"🔊 Synthesizing speech ({self.tts_engine}): {text[:50]}...")
 
             audio_data = None
@@ -261,15 +263,20 @@ class VoicePipeline:
                 # Microsoft Edge TTS (online, very natural)
                 import asyncio
 
+                logger.info("  [DEBUG] Starting edge-tts generation...")
                 async def _generate_edge_tts():
                     communicate = edge_tts.Communicate(text, config.TTS_EDGE_VOICE)
                     audio_buffer = io.BytesIO()
+                    chunk_count = 0
                     async for chunk in communicate.stream():
                         if chunk["type"] == "audio":
                             audio_buffer.write(chunk["data"])
+                            chunk_count += 1
+                    logger.info(f"  [DEBUG] Received {chunk_count} audio chunks from edge-tts")
                     return audio_buffer.getvalue()
 
                 audio_data = asyncio.run(_generate_edge_tts())
+                logger.info(f"  [DEBUG] edge-tts generation took {time.time() - start_time:.2f}s")
 
             elif self.tts_engine == "piper":
                 # Piper TTS (offline, fast, neural)

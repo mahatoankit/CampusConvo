@@ -135,7 +135,7 @@ ui:
   
   # Error handling
   max_consecutive_errors: 3    # Exit after this many consecutive errors
-  request_timeout: 30          # HTTP request timeout in seconds
+  request_timeout: 60          # HTTP request timeout in seconds (increased for TTS generation)
 
 # ----------------------------------------------------------------------------
 # TEMPORARY FILES

@@ -321,7 +321,11 @@ async def voice_query(request: VoiceRequest):
         raise HTTPException(status_code=503, detail="RAG pipeline not initialized")
 
     try:
+        import time
+        total_start = time.time()
+        
         # Step 1: Transcribe audio
+        step_start = time.time()
         audio_data = base64.b64decode(request.audio)
         logger.info(f"Voice query: Received audio ({len(audio_data)} bytes)")
 
@@ -336,17 +340,22 @@ async def voice_query(request: VoiceRequest):
         if not query_text:
             return {"status": "error", "error": "Empty transcription"}
 
-        logger.info(f"Voice query: Transcribed: '{query_text}'")
+        logger.info(f"Voice query: Transcribed: '{query_text}' (took {time.time() - step_start:.2f}s)")
 
         # Step 2: Query RAG pipeline
+        step_start = time.time()
         rag_result = rag_pipeline.process_query(query=query_text)
         answer_text = rag_result.get("response", "")
 
-        logger.info(f"Voice query: Generated answer ({len(answer_text)} chars)")
+        logger.info(f"Voice query: Generated answer ({len(answer_text)} chars, took {time.time() - step_start:.2f}s)")
 
         # Step 3: Synthesize speech
+        step_start = time.time()
         audio_data = voice_pipeline.synthesize_speech(answer_text)
         audio_b64 = base64.b64encode(audio_data).decode("utf-8")
+        logger.info(f"Voice query: Synthesized speech (took {time.time() - step_start:.2f}s)")
+        
+        logger.info(f"Voice query: Total time {time.time() - total_start:.2f}s")
 
         return {
             "status": "success",
