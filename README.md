@@ -7,10 +7,9 @@ An AI-powered voice assistant for Sunway College, Kathmandu. Built with RAG (Ret
 - **Wake Word Activation** - Say "Hello Zyra" to start conversations
 - **Voice-only Interface** - Completely hands-free interaction
 - **Speech-to-text** - Powered by OpenAI Whisper
-- **Text-to-speech** - Natural voice responses using gTTS
+- **Text-to-speech** - Natural voice responses using Edge TTS
 - **RAG pipeline** - Context-aware responses using vector similarity search
-- **Multi-platform support** - Works on Linux desktop, Termux (Android), and WSL
-- **Offline-first design** - Core functionality works without internet (except LLM generation)
+- **Multi-platform support** - Works on Linux desktop and WSL
 
 ## Architecture
 
@@ -27,7 +26,7 @@ Client (Voice) → Wake Word Detection → Server (FastAPI)
 - Python 3.10+
 - Virtual environment (recommended)
 - Google Gemini API key (free tier available)
-- Audio recording system (ALSA, FFmpeg, or Termux API)
+- Audio system with microphone (ALSA/PulseAudio)
 
 ### Installation
 
@@ -48,11 +47,10 @@ source env/bin/activate  # On Windows: env\Scripts\activate
 pip install -r requirements.txt
 ```
 
-4. Configure environment:
-```bash
-cp .env.example .env
-# Edit .env and add your GEMINI_API_KEY
-```
+4. Configure settings in `config.yaml`:
+   - Add your GEMINI_API_KEY
+   - Adjust TTS engine (edge-tts or gtts)
+   - Set STT model size (base, small, medium)
 
 5. Generate embeddings:
 ```bash
@@ -71,88 +69,73 @@ python client.py
 
 ## Configuration
 
-### Network Setup
+All configuration is managed through `config.yaml`. Key settings:
 
-Edit `server/config.py` to update the server IP address:
-```python
-SERVER_IP = "192.168.x.x"  # Your laptop's IP
+```yaml
+# Server
+server:
+  host: "0.0.0.0"
+  port: 8000
+  server_ip: "192.168.x.x"  # Your laptop's IP
+
+# Text-to-Speech
+tts:
+  engine: "edge-tts"  # or "gtts"
+  voice: "en-US-AriaNeural"
+
+# Speech-to-Text
+stt:
+  model: "medium"  # tiny, base, small, medium, large
+  language: "en"
+
+# Google Gemini API
+gemini:
+  api_key: "your-api-key-here"
+  use_llm: true
 ```
-
-### Voice Settings
-
-Configure voice features in `.env`:
-```bash
-ENABLE_VOICE=true
-STT_MODEL=base              # Whisper model: tiny, base, small, medium, large
-TTS_ENGINE=gtts             # TTS engine: gtts, pyttsx3
-TTS_LANGUAGE=en             # Language code
-TTS_ACCENT=com              # Accent: com (US), co.uk (UK), co.in (India)
-```
-
-### Wake Word Configuration
-
-The wake word "Hello Zyra" is configured in `client.py`. Alternative pronunciations are automatically handled for transcription accuracy.
 
 ## Usage
 
 ### Voice Assistant with Wake Word
 
 ```bash
-python client.py
+python src/client.py
 ```
 
 **How it works:**
-1. The assistant starts listening continuously
-2. Say "Hello Zyra" followed by your question
-   - Example: *"Hello Zyra, what courses are available?"*
-   - Example: *"Hello Zyra, tell me about placements"*
-3. ZYRA will respond with voice output
-4. Wait for the next wake word to ask another question
-5. Press Ctrl+C to exit
+1. Say "Hello Zyra" followed by your question
+2. ZYRA responds with voice output
+3. Press Ctrl+C to exit
 
 **Tips:**
-- Speak clearly and include your question right after "Hello Zyra"
-- If wake word isn't detected, try speaking louder or closer to the mic
-- The system listens for 6 seconds to capture both wake word and question
+- Speak clearly after "Hello Zyra"
+- Wait for the beep sounds (recording start/stop)
+- The system auto-detects when you stop speaking
 
 ### Audio System Requirements
 
 **Linux:**
 ```bash
-sudo apt install alsa-utils ffmpeg
+sudo apt install alsa-utils ffmpeg portaudio19-dev
 ```
-
-**Termux (Android):**
-1. Install Termux:API package:
-```bash
-pkg install termux-api
-```
-2. Install Termux:API app from F-Droid:
-   - Download: https://f-droid.org/en/packages/com.termux.api/
-   - Grant microphone permission in Android settings
-3. See `docs/TERMUX_SETUP.md` for detailed setup
 
 ## Project Structure
 
 ```
 CampusConvo/
-├── client.py              # Voice assistant with wake word
-├── run_server.py          # Server entry point
-├── run_embeddings.py      # Embedding generation script
-├── test_audio.py          # Audio system test utility
-├── termux_diagnostic.py   # Termux setup diagnostic tool
+├── src/
+│   ├── client.py          # Voice assistant with wake word
+│   └── client_simple.py   # Simple client without wake word
 ├── server/
 │   ├── api_server.py      # FastAPI server
 │   ├── rag_pipeline.py    # RAG implementation
-│   ├── voice_pipeline.py  # Voice processing (Whisper + gTTS)
-│   └── config.py          # Configuration
-├── data/
-│   ├── raw/               # Raw data files
-│   └── processed/         # Processed data
-├── embeddings/            # ChromaDB vector store
-├── docs/                  # Documentation
-│   └── TERMUX_SETUP.md   # Termux setup guide
-└── requirements.txt       # Python dependencies
+│   └── voice_pipeline.py  # Voice processing (Whisper + TTS)
+├── config.yaml            # Unified configuration
+├── unified_config.py      # Configuration loader
+├── run_server.py          # Server entry point
+├── run_embeddings.py      # Embedding generation script
+├── data/                  # Data files
+└── embeddings/            # ChromaDB vector store
 ```
 
 ## Technology Stack
@@ -161,16 +144,14 @@ CampusConvo/
 - **Vector DB:** ChromaDB
 - **Embeddings:** sentence-transformers (all-MiniLM-L6-v2)
 - **LLM:** Google Gemini 2.0 Flash
-- **Speech-to-Text:** OpenAI Whisper (base model)
-- **Text-to-Speech:** gTTS (Google Text-to-Speech)
+- **Speech-to-Text:** OpenAI Whisper
+- **Text-to-Speech:** Edge TTS / gTTS
 - **Wake Word:** Custom detection with fuzzy matching
-- **Audio:** ALSA, FFmpeg, SoX, or Termux API
+- **Audio:** PyAudio, webrtcvad
 
 ## Documentation
 
-- `docs/SETUP_GUIDE.md` - Detailed setup instructions
-- `docs/PROMPT_ENGINEERING.md` - Customizing AI responses
-- `docs/TTS_NATURALNESS_GUIDE.md` - Voice quality improvement
+See `config.yaml` for all available configuration options.
 
 ## License
 

@@ -147,12 +147,3 @@ temp:
   goodbye_file: "/tmp/campusconvo_goodbye.mp3"
   response_file: "/tmp/campusconvo_response.mp3"
 
-# ============================================================================
-# NOTES:
-# ============================================================================
-# 1. Server IP: Update 'server.server_ip' when you change networks
-# 2. GPU: Automatically detected if available (NVIDIA CUDA required)
-# 3. TTS Quality: edge-tts provides much better voice quality than gtts
-# 4. STT Model: 'medium' is recommended for good accuracy without being too slow
-# 5. VAD Aggressiveness: If microphone isn't detecting speech, lower to 1 or 2
-# ============================================================================

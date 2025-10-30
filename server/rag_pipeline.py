@@ -54,16 +54,16 @@ class RAGPipeline:
             ) from e
 
         # Initialize Google Gemini for response generation
-        self.use_llm = os.environ.get("USE_LLM", "true").lower() == "true"
+        self.use_llm = getattr(config, 'USE_LLM', True)
         self.llm = None
 
         if self.use_llm:
             try:
                 import google.generativeai as genai
 
-                api_key = os.environ.get("GEMINI_API_KEY")
+                api_key = getattr(config, 'GEMINI_API_KEY', None)
                 if not api_key:
-                    logger.warning("GEMINI_API_KEY not found in environment")
+                    logger.warning("GEMINI_API_KEY not found in config")
                     logger.warning(
                         "Get your free API key from: https://makersuite.google.com/app/apikey"
                     )
@@ -192,7 +192,18 @@ class RAGPipeline:
         # If LLM is not available, return formatted context
         if not self.use_llm or not self.llm:
             logger.info("Returning context-based response (LLM disabled)")
-            return f"Based on the information from Sunway College:\n\n{context_text}"
+            # Extract key information instead of dumping all context
+            # Limit to first 500 characters of combined context for voice friendliness
+            summary = context_text[:500].strip()
+            if len(context_text) > 500:
+                # Find last complete sentence
+                last_period = summary.rfind('.')
+                if last_period > 100:  # Keep at least 100 chars
+                    summary = summary[:last_period + 1]
+                else:
+                    summary += "..."
+            
+            return f"Based on the college information: {summary}"
 
         # Create prompt for Gemini
         prompt = f"""You are a helpful college assistant for Sunway College in Kathmandu, Nepal. Answer the student's question based ONLY on the provided context below.
